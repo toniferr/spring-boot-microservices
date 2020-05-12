@@ -16,7 +16,7 @@ public class ItemController {
 	
 	
 	//alternativa a establecer service con @Primary
-	@Qualifier("serviceFeign")
+	@Qualifier("serviceRestTemplate")
 	@Autowired
 	private ItemService itemService;
 
