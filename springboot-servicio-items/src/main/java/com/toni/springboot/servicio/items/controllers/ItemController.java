@@ -1,9 +1,16 @@
 package com.toni.springboot.servicio.items.controllers;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,12 +23,16 @@ import com.toni.springboot.servicio.items.models.service.ItemService;
 @RestController
 public class ItemController {
 	
+	private static Logger log = LoggerFactory.getLogger(ItemController.class);
 	
 	//alternativa a establecer service con @Primary
 	@Qualifier("serviceFeign")
 	@Autowired
 	private ItemService itemService;
 
+	@Value("${configuracion.texto}") //configuracion externa
+	private String texto;
+	
 	@GetMapping("/listar")
 	public List<Item> listar(){
 		return itemService.findAll();
@@ -42,5 +53,15 @@ public class ItemController {
 		producto.setPrecio(500.10);
 		item.setProducto(producto);
 		return item;
+	}
+	
+	@GetMapping("/obtener-config")
+	public ResponseEntity<?> obtenerConfig(@Value("${server.port}") String port){
+		
+		log.info(texto);
+		Map<String, String> json = new HashMap<>();
+		json.put("texto",texto);
+		json.put("puerto", port);
+		return new ResponseEntity<Map<String, String>>(json, HttpStatus.OK);
 	}
 }
